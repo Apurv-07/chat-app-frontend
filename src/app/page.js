@@ -1,103 +1,223 @@
-import Image from "next/image";
+"use client";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm/6 text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-[family-name:var(--font-geist-mono)] font-semibold">
-              src/app/page.js
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+  const router = useRouter();
+  const [tab, setTab] = useState("login");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+  const [loginForm, setLoginForm] = useState({
+    email: "",
+    password: "",
+  });
+
+  const [registerForm, setRegisterForm] = useState({
+    name: "",
+    email: "",
+    password: "",
+    pic: "", // just a string (URL or empty)
+  });
+
+  const handleChange = (e, key, form) => {
+    const value =
+      form === "register" && key === "pic"
+        ? e.target.value // ← no file input now, just text
+        : e.target.value;
+
+    if (form === "register") {
+      setRegisterForm({ ...registerForm, [key]: value });
+    } else {
+      setLoginForm({ ...loginForm, [key]: value });
+    }
+  };
+
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setError("");
+
+    try {
+      const res = await fetch("http://localhost:5000/api/user/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(loginForm),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) throw new Error(data.message || "Login failed");
+
+      localStorage.setItem("accessToken", data.accessToken);
+      localStorage.setItem("refreshToken", data.refreshToken);
+      localStorage.setItem("user", JSON.stringify(data));
+
+      router.push("/chat"); // redirect to chat page
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleRegistration = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setError("");
+
+    try {
+      const res = await fetch("http://localhost:5000/api/user/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(registerForm),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) throw new Error(data.message || "Registration failed");
+
+      localStorage.setItem("accessToken", data.accessToken);
+      localStorage.setItem("refreshToken", data.refreshToken);
+      localStorage.setItem("user", JSON.stringify(data));
+
+      router.push("/chat");
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="flex min-h-screen min-w-screen items-center justify-center bg-[url('/aboutpagebackground.png')]">
+      <div className="bg-[rgba(168,169,116,0.5)] p-10 rounded-2xl flex flex-col items-center min-h-[444px]">
+        <div className="flex gap-10 mb-4">
+          <div
+            className={`bg-orange-400 text-center w-[140px] p-2 rounded-md cursor-pointer ${
+              tab === "login" ? "bg-yellow-400" : ""
+            }`}
+            onClick={() => setTab("login")}
           >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+            Login
+          </div>
+          <div
+            className={`bg-orange-400 w-[140px] text-center p-2 rounded-md cursor-pointer ${
+              tab === "register" ? "bg-yellow-400" : ""
+            }`}
+            onClick={() => setTab("register")}
           >
-            Read our docs
-          </a>
+            Register
+          </div>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+
+        {error && <div className="text-red-600 mb-4">{error}</div>}
+
+        {tab === "login" && (
+          <form
+            className="flex flex-col justify-between h-[250px]"
+            onSubmit={handleLogin}
+          >
+            <div className="flex flex-col gap-5">
+              <div className="flex justify-between items-center">
+                <label className="min-w-[100px] mr-5" htmlFor="email">
+                  Email
+                </label>
+                <input
+                  className="p-2 border-solid border-2 min-w-[400px]"
+                  name="email"
+                  onChange={(e) => handleChange(e, "email", "login")}
+                  value={loginForm.email}
+                  id="email"
+                />
+              </div>
+              <div className="flex justify-between items-center">
+                <label className="min-w-[100px] mr-5" htmlFor="password">
+                  Password
+                </label>
+                <input
+                  className="p-2 border-solid border-2 min-w-[400px]"
+                  type="password"
+                  name="password"
+                  onChange={(e) => handleChange(e, "password", "login")}
+                  value={loginForm.password}
+                  id="password"
+                />
+              </div>
+            </div>
+            <button
+              disabled={loading}
+              className="bg-orange-400 p-2 rounded-md cursor-pointer text-center w-[140px] mx-[50%] translate-x-[-50%]"
+              type="submit"
+            >
+              {loading ? "Logging in..." : "Login"}
+            </button>
+          </form>
+        )}
+
+        {tab === "register" && (
+          <form className="flex flex-col gap-5" onSubmit={handleRegistration}>
+            <div className="flex justify-between items-center">
+              <label className="min-w-[100px] mr-5" htmlFor="name">
+                Name
+              </label>
+              <input
+                className="p-2 border-solid border-2 min-w-[400px]"
+                name="name"
+                onChange={(e) => handleChange(e, "name", "register")}
+                value={registerForm.name}
+                id="name"
+              />
+            </div>
+            <div className="flex justify-between items-center">
+              <label className="min-w-[100px] mr-5" htmlFor="email">
+                Email
+              </label>
+              <input
+                className="p-2 border-solid border-2 min-w-[400px]"
+                name="email"
+                onChange={(e) => handleChange(e, "email", "register")}
+                value={registerForm.email}
+                id="email"
+              />
+            </div>
+            <div className="flex justify-between items-center">
+              <label className="min-w-[100px] mr-5" htmlFor="password">
+                Password
+              </label>
+              <input
+                className="p-2 border-solid border-2 min-w-[400px]"
+                type="password"
+                name="password"
+                onChange={(e) => handleChange(e, "password", "register")}
+                value={registerForm.password}
+                id="password"
+              />
+            </div>
+            <div className="flex justify-between items-center">
+              <label className="min-w-[100px] mr-5" htmlFor="pic">
+                Picture
+              </label>
+              <input
+                className="p-2 border-solid border-2 min-w-[400px]"
+                type="text"
+                placeholder="Optional picture URL"
+                onChange={(e) => handleChange(e, "pic", "register")}
+                name="pic"
+                value={registerForm.pic}
+                id="pic"
+              />
+            </div>
+            <button
+              disabled={loading}
+              className="bg-orange-400 p-2 rounded-md cursor-pointer text-center w-[140px] mx-[50%] translate-x-[-50%]"
+              type="submit"
+            >
+              {loading ? "Registering..." : "Register"}
+            </button>
+          </form>
+        )}
+      </div>
     </div>
   );
 }
