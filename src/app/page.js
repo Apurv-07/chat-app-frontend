@@ -39,11 +39,14 @@ export default function Home() {
     setError("");
 
     try {
-      const res = await fetch("http://localhost:5000/api/user/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(loginForm),
-      });
+      const res = await fetch(
+        "https://chat-backend-bgsn.onrender.com/api/user/login",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(loginForm),
+        }
+      );
 
       const data = await res.json();
 
@@ -67,11 +70,14 @@ export default function Home() {
     setError("");
 
     try {
-      const res = await fetch("http://localhost:5000/api/user/register", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(registerForm),
-      });
+      const res = await fetch(
+        "https://chat-backend-bgsn.onrender.com/api/user/register",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(registerForm),
+        }
+      );
 
       const data = await res.json();
 
