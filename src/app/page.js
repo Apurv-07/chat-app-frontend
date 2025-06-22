@@ -97,11 +97,11 @@ export default function Home() {
 
   return (
     <div className="flex min-h-screen min-w-screen items-center justify-center bg-[url('/aboutpagebackground.png')]">
-      <h1 className="text-3xl font-bold mb-4">Welcome to POST CARD</h1>
-      <div className="bg-[rgba(168,169,116,0.5)] p-10 rounded-2xl flex flex-col items-center min-h-[444px]">
+      <div className="bg-[rgba(168,169,116,0.5)] p-10 md:rounded-2xl flex flex-col items-center md:min-h-[480px] max-md:h-[100vh]">
+        <h1 className="text-3xl font-bold mb-4">Welcome to POST CARD</h1>
         <div className="flex gap-10 mb-4">
           <div
-            className={`bg-orange-400 text-center w-[140px] p-2 rounded-md cursor-pointer ${
+            className={`bg-orange-400 text-center w-[80px] md:w-[140px] p-2 rounded-md cursor-pointer ${
               tab === "login" ? "bg-yellow-400" : ""
             }`}
             onClick={() => setTab("login")}
@@ -109,7 +109,7 @@ export default function Home() {
             Login
           </div>
           <div
-            className={`bg-orange-400 w-[140px] text-center p-2 rounded-md cursor-pointer ${
+            className={`bg-orange-400 md:w-[140px] w-[80px] text-center p-2 rounded-md cursor-pointer ${
               tab === "register" ? "bg-yellow-400" : ""
             }`}
             onClick={() => setTab("register")}
@@ -126,24 +126,24 @@ export default function Home() {
             onSubmit={handleLogin}
           >
             <div className="flex flex-col gap-5">
-              <div className="flex justify-between items-center">
-                <label className="min-w-[100px] mr-5" htmlFor="email">
+              <div className="flex md:flex-row flex-col md:justify-between items-center">
+                <label className="md:min-w-[100px] min-w-full md:mr-5" htmlFor="email">
                   Email
                 </label>
                 <input
-                  className="p-2 border-solid border-2 min-w-[400px]"
+                  className="p-2 border-solid border-2 md:min-w-[400px]"
                   name="email"
                   onChange={(e) => handleChange(e, "email", "login")}
                   value={loginForm.email}
                   id="email"
                 />
               </div>
-              <div className="flex justify-between items-center">
-                <label className="min-w-[100px] mr-5" htmlFor="password">
+              <div className="flex md:justify-between md:flex-row flex-col items-center">
+                <label className="md:min-w-[100px] min-w-full md:mr-5" htmlFor="password">
                   Password
                 </label>
                 <input
-                  className="p-2 border-solid border-2 min-w-[400px]"
+                  className="p-2 border-solid border-2 md:min-w-[400px]"
                   type="password"
                   name="password"
                   onChange={(e) => handleChange(e, "password", "login")}
@@ -164,36 +164,36 @@ export default function Home() {
 
         {tab === "register" && (
           <form className="flex flex-col gap-5" onSubmit={handleRegistration}>
-            <div className="flex justify-between items-center">
-              <label className="min-w-[100px] mr-5" htmlFor="name">
+            <div className="flex md:flex-row flex-col md:justify-between items-center">
+              <label className="md:min-w-[100px] min-w-[214px] md:mr-5" htmlFor="name">
                 Name
               </label>
               <input
-                className="p-2 border-solid border-2 min-w-[400px]"
+                className="p-2 border-solid border-2 md:min-w-[400px]"
                 name="name"
                 onChange={(e) => handleChange(e, "name", "register")}
                 value={registerForm.name}
                 id="name"
               />
             </div>
-            <div className="flex justify-between items-center">
-              <label className="min-w-[100px] mr-5" htmlFor="email">
+            <div className="flex md:justify-between md:flex-row flex-col items-center">
+              <label className="md:min-w-[100px] min-w-[214px] md:mr-5" htmlFor="email">
                 Email
               </label>
               <input
-                className="p-2 border-solid border-2 min-w-[400px]"
+                className="p-2 border-solid border-2 md:min-w-[400px]"
                 name="email"
                 onChange={(e) => handleChange(e, "email", "register")}
                 value={registerForm.email}
                 id="email"
               />
             </div>
-            <div className="flex justify-between items-center">
-              <label className="min-w-[100px] mr-5" htmlFor="password">
+            <div className="flex md:justify-between md:flex-row flex-col items-center">
+              <label className="md:min-w-[100px] md:mr-5 min-w-[214px]" htmlFor="password">
                 Password
               </label>
               <input
-                className="p-2 border-solid border-2 min-w-[400px]"
+                className="p-2 border-solid border-2 md:min-w-[400px]"
                 type="password"
                 name="password"
                 onChange={(e) => handleChange(e, "password", "register")}
@@ -201,12 +201,12 @@ export default function Home() {
                 id="password"
               />
             </div>
-            <div className="flex justify-between items-center">
-              <label className="min-w-[100px] mr-5" htmlFor="pic">
+            <div className="flex md:justify-between md:flex-row flex-col items-center">
+              <label className="md:min-w-[100px] min-w-[214px] md:mr-5" htmlFor="pic">
                 Picture
               </label>
               <input
-                className="p-2 border-solid border-2 min-w-[400px]"
+                className="p-2 border-solid border-2 md:min-w-[400px]"
                 type="text"
                 placeholder="Optional picture URL"
                 onChange={(e) => handleChange(e, "pic", "register")}

@@ -74,7 +74,7 @@ export default function ChatPage() {
         loadMessages();
     }, [page]);
 
-    const ENDPOINT = "http://localhost:5000";
+    const ENDPOINT = "https://chat-backend-bgsn.onrender.com";
     const socket = useRef(null);
     const selectedChatRef = useRef(null);
 
@@ -183,7 +183,7 @@ export default function ChatPage() {
 
         const fetchChats = async () => {
             try {
-                const res = await fetch("http://localhost:5000/api/chat", {
+                const res = await fetch("https://chat-backend-bgsn.onrender.com/api/chat", {
                     headers: {
                         Authorization: `Bearer ${user.accessToken}`,
                     },
@@ -204,7 +204,7 @@ export default function ChatPage() {
         if (!searchTerm.trim() || !user) return;
         try {
             const res = await fetch(
-                `http://localhost:5000/api/user/searchUser?search=${searchTerm}`,
+                `https://chat-backend-bgsn.onrender.com/api/user/searchUser?search=${searchTerm}`,
                 {
                     headers: {
                         Authorization: `Bearer ${user.accessToken}`,
@@ -245,7 +245,7 @@ export default function ChatPage() {
         console.log("This runs")
         if (!user) return;
         try {
-            const res = await fetch("http://localhost:5000/api/chat/create", {
+            const res = await fetch("https://chat-backend-bgsn.onrender.com/api/chat/create", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -276,7 +276,7 @@ export default function ChatPage() {
     const loadMessages = async (previousScrollHeight = null) => {
         try {
             const res = await fetch(
-                `http://localhost:5000/api/message/${selectedChat._id}?page=${page}&limit=10`,
+                `https://chat-backend-bgsn.onrender.com/api/message/${selectedChat._id}?page=${page}&limit=10`,
                 {
                     headers: {
                         Authorization: `Bearer ${user.accessToken}`,
@@ -329,7 +329,7 @@ export default function ChatPage() {
     const handleSend = async () => {
         if (!messageInput.trim() || !selectedChat || !user) return;
         try {
-            const res = await fetch("http://localhost:5000/api/message", {
+            const res = await fetch("https://chat-backend-bgsn.onrender.com/api/message", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -410,13 +410,13 @@ export default function ChatPage() {
                 </div>
                 <input
                     type="text"
-                    className="w-full md:p-2 p-[2px] border rounded"
+                    className="w-full md:p-2 p-[2px] border rounded border-white"
                     placeholder="Search users or conversations..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                 />
                 <button
-                    className="ml-2 px-4 bg-orange-400 text-white rounded leading-0 max-md:hidden"
+                    className="ml-2 px-4 bg-orange-400 text-white rounded leading-0 max-md:hidden md:h-[40px]"
                     onClick={handleSearch}
                 >
                     Search

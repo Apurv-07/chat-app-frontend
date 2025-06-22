@@ -1,4 +1,4 @@
-'use client';
+"use client";
 import React, { useState } from "react";
 
 export default function GroupModal({ onClose, onCreate, user }) {
@@ -10,9 +10,12 @@ export default function GroupModal({ onClose, onCreate, user }) {
   const handleGroupUserSearch = async () => {
     if (!groupSearch.trim()) return;
     try {
-      const res = await fetch(`http://localhost:5000/api/user/searchUser?search=${groupSearch}`, {
-        headers: { Authorization: `Bearer ${user.accessToken}` },
-      });
+      const res = await fetch(
+        `https://chat-backend-bgsn.onrender.com/api/user/searchUser?search=${groupSearch}`,
+        {
+          headers: { Authorization: `Bearer ${user.accessToken}` },
+        }
+      );
       const data = await res.json();
       setGroupResults(data);
     } catch (err) {
@@ -25,22 +28,25 @@ export default function GroupModal({ onClose, onCreate, user }) {
       alert("Group name and at least 2 users required");
       return;
     }
-    const adminId=user._id
+    const adminId = user._id;
     const usersList = [user._id, ...groupUsers.map((u) => u._id)];
     try {
-      const res = await fetch("http://localhost:5000/api/chat/createGroup", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${user.accessToken}`,
-        },
-        body: JSON.stringify({
-          groupName: groupName,
-          users: usersList,
-          isGroupChat: true,
-          groupAdmin: adminId,
-        }),
-      });
+      const res = await fetch(
+        "https://chat-backend-bgsn.onrender.com/api/chat/createGroup",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${user.accessToken}`,
+          },
+          body: JSON.stringify({
+            groupName: groupName,
+            users: usersList,
+            isGroupChat: true,
+            groupAdmin: adminId,
+          }),
+        }
+      );
       const groupChat = await res.json();
       onCreate(groupChat);
       onClose(); // Close modal
