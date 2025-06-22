@@ -97,6 +97,7 @@ export default function Home() {
 
   return (
     <div className="flex min-h-screen min-w-screen items-center justify-center bg-[url('/aboutpagebackground.png')]">
+      <h1 className="text-3xl font-bold mb-4">Welcome to POST CARD</h1>
       <div className="bg-[rgba(168,169,116,0.5)] p-10 rounded-2xl flex flex-col items-center min-h-[444px]">
         <div className="flex gap-10 mb-4">
           <div
