@@ -1,12 +1,29 @@
 "use client";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 export default function Home() {
   const router = useRouter();
-  const [tab, setTab] = useState("login");
+  const [tab, setTab] = useState("register");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [active, setActive] = useState(true);
+
+  useEffect(() => {
+    // Always push a dummy state on first load to trap the back button
+    window.history.pushState({ trapped: true }, "");
+
+    const onPopState = () => {
+      alert("Back button pressed! Staying here.");
+      window.history.pushState({ trapped: true }, "");
+    };
+
+    window.addEventListener("popstate", onPopState);
+
+    return () => {
+      window.removeEventListener("popstate", onPopState);
+    };
+  }, []);
 
   const [loginForm, setLoginForm] = useState({
     email: "",
@@ -95,13 +112,27 @@ export default function Home() {
     }
   };
 
+  useEffect(() => {
+    const onPopState = () => {
+      alert(
+        "This runs when user presses mobile back button or browser back button"
+      );
+      // This runs when user presses mobile back button or browser back button
+      setSelectedChat(null); // reset chat selection
+    };
+
+    window.addEventListener("popstate", onPopState);
+
+    return () => window.removeEventListener("popstate", onPopState);
+  }, []);
+
   return (
-    <div className="flex min-h-screen min-w-screen items-center justify-center bg-[url('/aboutpagebackground.png')]">
-      <div className="bg-[rgba(168,169,116,0.5)] p-10 md:rounded-2xl flex flex-col items-center md:min-h-[480px] max-md:h-[100vh]">
-        <h1 className="text-3xl font-bold mb-4">Welcome to POST CARD</h1>
-        <div className="flex gap-10 mb-4">
+    <div className="flex min-h-screen min-w-screen items-center justify-center bg-[url('/aboutpagebackground.png')] bg-no-repeat">
+      <div className="bg-[rgba(92,89,89,0.6)] backdrop-blur-sm p-10 md:rounded-2xl flex flex-col items-center md:min-h-[480px] max-md:h-[100vh] shadow-[34px_8px_24px_rgba(0,0,0,0.2),_18px_28px_24px_rgba(0,0,0,0.2)]">
+        <h1 className="text-3xl font-bold mb-4 font-sans text-white text-center">Welcome to POST CARD</h1>
+        <div className="flex gap-2 mb-4 w-full">
           <div
-            className={`bg-orange-400 text-center w-[80px] md:w-[140px] p-2 rounded-md cursor-pointer ${
+            className={`bg-orange-400 text-center w-full p-2 rounded-md cursor-pointer font-sans ${
               tab === "login" ? "bg-yellow-400" : ""
             }`}
             onClick={() => setTab("login")}
@@ -109,7 +140,7 @@ export default function Home() {
             Login
           </div>
           <div
-            className={`bg-orange-400 md:w-[140px] w-[80px] text-center p-2 rounded-md cursor-pointer ${
+            className={`bg-orange-400 w-full text-center p-2 rounded-md cursor-pointer font-sans ${
               tab === "register" ? "bg-yellow-400" : ""
             }`}
             onClick={() => setTab("register")}
@@ -122,28 +153,34 @@ export default function Home() {
 
         {tab === "login" && (
           <form
-            className="flex flex-col justify-between h-[250px]"
+            className="flex flex-col justify-between h-[250px] w-full"
             onSubmit={handleLogin}
           >
-            <div className="flex flex-col gap-5">
-              <div className="flex md:flex-row flex-col md:justify-between items-center">
-                <label className="md:min-w-[100px] min-w-full md:mr-5" htmlFor="email">
+            <div className="flex flex-col gap-5 w-full">
+              <div className="flex flex-col md:justify-between items-center">
+                <label
+                  className="min-w-full font-sans"
+                  htmlFor="email"
+                >
                   Email
                 </label>
                 <input
-                  className="p-2 border-solid border-2 md:min-w-[400px]"
+                  className="p-2 border-solid border-2 min-w-full border-white rounded-md"
                   name="email"
                   onChange={(e) => handleChange(e, "email", "login")}
                   value={loginForm.email}
                   id="email"
                 />
               </div>
-              <div className="flex md:justify-between md:flex-row flex-col items-center">
-                <label className="md:min-w-[100px] min-w-full md:mr-5" htmlFor="password">
+              <div className="flex md:justify-between flex-col items-center">
+                <label
+                  className="min-w-full font-sans"
+                  htmlFor="password"
+                >
                   Password
                 </label>
                 <input
-                  className="p-2 border-solid border-2 md:min-w-[400px]"
+                  className="p-2 border-solid border-2 min-w-full border-white rounded-md"
                   type="password"
                   name="password"
                   onChange={(e) => handleChange(e, "password", "login")}
@@ -154,7 +191,7 @@ export default function Home() {
             </div>
             <button
               disabled={loading}
-              className="bg-orange-400 p-2 rounded-md cursor-pointer text-center w-[140px] mx-[50%] translate-x-[-50%]"
+              className="bg-orange-400 p-2 rounded-md cursor-pointer text-center w-[140px] mx-[50%] translate-x-[-50%] border-white font-sans"
               type="submit"
             >
               {loading ? "Logging in..." : "Login"}
@@ -163,37 +200,46 @@ export default function Home() {
         )}
 
         {tab === "register" && (
-          <form className="flex flex-col gap-5" onSubmit={handleRegistration}>
-            <div className="flex md:flex-row flex-col md:justify-between items-center">
-              <label className="md:min-w-[100px] min-w-[214px] md:mr-5" htmlFor="name">
+          <form className="flex flex-col gap-5 w-full" onSubmit={handleRegistration}>
+            <div className="flex flex-col md:justify-between items-center">
+              <label
+                className="min-w-full font-sans"
+                htmlFor="name"
+              >
                 Name
               </label>
               <input
-                className="p-2 border-solid border-2 md:min-w-[400px]"
+                className="p-2 border-solid border-2 min-w-full border-white rounded-md"
                 name="name"
                 onChange={(e) => handleChange(e, "name", "register")}
                 value={registerForm.name}
                 id="name"
               />
             </div>
-            <div className="flex md:justify-between md:flex-row flex-col items-center">
-              <label className="md:min-w-[100px] min-w-[214px] md:mr-5" htmlFor="email">
+            <div className="flex md:justify-between flex-col items-center">
+              <label
+                className="min-w-full font-sans"
+                htmlFor="email"
+              >
                 Email
               </label>
               <input
-                className="p-2 border-solid border-2 md:min-w-[400px]"
+                className="p-2 border-solid border-2 min-w-full border-white rounded-md"
                 name="email"
                 onChange={(e) => handleChange(e, "email", "register")}
                 value={registerForm.email}
                 id="email"
               />
             </div>
-            <div className="flex md:justify-between md:flex-row flex-col items-center">
-              <label className="md:min-w-[100px] md:mr-5 min-w-[214px]" htmlFor="password">
+            <div className="flex md:justify-between flex-col items-center">
+              <label
+                className="min-w-full font-sans"
+                htmlFor="password"
+              >
                 Password
               </label>
               <input
-                className="p-2 border-solid border-2 md:min-w-[400px]"
+                className="p-2 border-solid border-2 min-w-full border-white rounded-md"
                 type="password"
                 name="password"
                 onChange={(e) => handleChange(e, "password", "register")}
@@ -201,12 +247,15 @@ export default function Home() {
                 id="password"
               />
             </div>
-            <div className="flex md:justify-between md:flex-row flex-col items-center">
-              <label className="md:min-w-[100px] min-w-[214px] md:mr-5" htmlFor="pic">
+            <div className="flex md:justify-between flex-col items-center">
+              <label
+                className="min-w-full font-sans"
+                htmlFor="pic"
+              >
                 Picture
               </label>
               <input
-                className="p-2 border-solid border-2 md:min-w-[400px]"
+                className="p-2 border-solid border-2 min-w-full border-white rounded-md"
                 type="text"
                 placeholder="Optional picture URL"
                 onChange={(e) => handleChange(e, "pic", "register")}
@@ -217,7 +266,7 @@ export default function Home() {
             </div>
             <button
               disabled={loading}
-              className="bg-orange-400 p-2 rounded-md cursor-pointer text-center w-[140px] mx-[50%] translate-x-[-50%]"
+              className="bg-orange-400 p-2 rounded-md cursor-pointer text-center w-[140px] mx-[50%] translate-x-[-50%] font-sans"
               type="submit"
             >
               {loading ? "Registering..." : "Register"}

@@ -3,9 +3,10 @@ import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import GroupModal from "../common/Modal";
 import { io } from "socket.io-client";
-import Search from "../common/Search";
+import { formatCustomDate } from "../utils/utils";
 import Bell from "../common/Bell";
 import Menu from "../common/Menu";
+import Image from "next/image";
 
 export default function ChatPage() {
     const router = useRouter();
@@ -386,13 +387,13 @@ export default function ChatPage() {
         });
     };
 
-    // ✅ Fallback UI while user is loading
     if (!user) {
         return <div className="text-white text-center mt-20">Loading...</div>;
     }
 
     return (
-        <div className="h-screen bg-[url('/aboutpagebackground.png')] p-4">
+        <div className="h-screen bg-[url('/aboutpagebackground.png')] md:p-4">
+            <div className="bg-[rgba(0,0,0,0.1)] border-gray-600 border-solid border backdrop-blur-sm rounded-2xl md:p-5 ">
             {/* Top Bar */}
             {showGroupModal && (
                 <GroupModal
@@ -404,13 +405,13 @@ export default function ChatPage() {
                     }}
                 />
             )}
-            <div className="mb-4 flex gap-3 md:gap-5 items-center">
+            <div className="md:mb-4 flex gap-3 md:gap-5 items-center md:p-0 p-4 font-sans">
                 <div className="text-white bg-orange-300 p-2 rounded-full w-12 max-md:h-8 flex items-center justify-center">
                     {user?.name?.[0] || "U"}
                 </div>
                 <input
                     type="text"
-                    className="w-full md:p-2 p-[2px] border rounded border-white"
+                    className="w-full md:p-2 p-[3px] border rounded border-gray-600"
                     placeholder="Search users or conversations..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
@@ -422,10 +423,10 @@ export default function ChatPage() {
                     Search
                 </button>
                 <button
-                    className="bg-orange-400 w-[60px] text-white rounded md:hidden"
+                    className="bg-orange-400 w-[60px] text-white rounded md:hidden flex items-center justify-center h-8"
                     onClick={handleSearch}
                 >
-                    <Search />
+                    <Image src={"/search.svg"} width={20} height={20} alt="Search" />
                 </button>
                 <Bell count={notifications.length} click={toggleNotifications} />
                 <div className="relative z-40 top-10">
@@ -449,11 +450,11 @@ export default function ChatPage() {
             </div>
 
             {/* Chat UI */}
-            <div className="md:flex h-[85vh] border rounded overflow-hidden">
+            <div className="md:flex md:h-[79vh] h-[90vh] border border-gray-600 rounded overflow-hidden">
                 {/* Sidebar */}
-                <div className={`md:w-1/3 border-r p-4 overflow-y-auto ${selectedChat && "max-md:hidden"}`}>
+                <div className={`md:w-1/3 border-r border-gray-600 p-4 overflow-y-auto ${selectedChat && "max-md:hidden"}`}>
                     <div className="flex justify-between mb-5">
-                        <h2 className="font-semibold mb-2">Conversations</h2>
+                        <h2 className="font-semibold mb-2 text-white">Conversations</h2>
                         <button onClick={() => setShowGroupModal(true)} className="bg-orange-400 text-white px-4 rounded">
                             New group
                         </button>
@@ -492,13 +493,13 @@ export default function ChatPage() {
                                 return (
                                     <div
                                         key={chat._id}
-                                        className={`p-2 rounded cursor-pointer text-white mb-1 ${selectedChat?._id === chat._id
-                                            ? "bg-orange-400"
+                                        className={`p-2 rounded cursor-pointer flex gap-4 items-center text-white mb-1 ${selectedChat?._id === chat._id
+                                            ? "bg-[rgba(73,68,68,0.8)]"
                                             : "hover:bg-yellow-200 hover:text-black"
                                             }`}
                                         onClick={() => setSelectedChat(chat)}
                                     >
-                                        {name}
+                                        <div className="w-8 h-8 rounded-full bg-orange-400 flex items-center justify-center">{name.split("")[0]}</div>{name}
                                     </div>
                                 );
                             })
@@ -515,25 +516,34 @@ export default function ChatPage() {
                                     ? selectedChat.chatName
                                     : selectedChat?.users?.find((u) => u?._id && u._id !== user?._id)?.name || "Unknown"}
                             </h2>
-                            <div className="flex-1 border rounded mb-2 p-2 overflow-y-auto" ref={messagesContainerRef} onScroll={handleScroll}>
+                        {console.log(JSON.stringify(selectedChat), "CHAT")}
+                            <div className="flex-1 rounded mb-2 p-2 overflow-y-auto" ref={messagesContainerRef} onScroll={handleScroll}>
                                 {/* {console.log(messages)} */}
                                 {messages.length > 0 && messages.map((m) => {
                                     return (
                                         <div key={m._id}>
                                             {m._id && <div
-                                                className={`my-1 p-2 max-w-[70%] rounded text-black flex justify-between gap-10 ${m?.sender._id === user._id
-                                                    ? "bg-blue-200 self-end ml-auto"
-                                                    : "bg-gray-300 self-start mr-auto"
+                                                className={`my-1 p-2 md:max-w-[70%] max-w-[85%] rounded-lg text-black flex justify-between ${m?.sender._id === user._id
+                                                    ? "bg-blue-200 self-end ml-auto rounded-br-[0px]"
+                                                    : "bg-gray-300 self-start mr-auto rounded-bl-[0px]"
                                                     }`}
                                             >
-                                                <p>{m.content}</p>
-                                                {selectedChat.isGroupChat ? <span className="text-xs text-gray-500">
+                                                <p className="text-wrap">{m.content}</p>
+                                                {/* {selectedChat.isGroupChat ? <span className="text-xs text-gray-500">
                                                     {m.sender._id === user._id ? "You" : m.sender.name}<br />
-                                                    {new Date(m.createdAt).toLocaleString()}
+                                                    {formatCustomDate(m.createdAt)}
                                                 </span> : <span className="text-xs text-gray-500">
-                                                    {new Date(m.createdAt).toLocaleString()}
-                                                </span>}
+                                                    {formatCustomDate(m.createdAt)}
+                                                </span>} */}
                                             </div>}
+                                            <div className={`flex ${m?.sender._id === user._id?"justify-end":"justify-start"}`}>
+                                            {selectedChat.isGroupChat ? <span className="text-xs text-gray-200">
+                                                {m.sender._id === user._id ? "You" : m.sender.name}<br />
+                                                {formatCustomDate(m.createdAt)}
+                                            </span> : <span className="text-xs text-gray-200">
+                                                {formatCustomDate(m.createdAt)}
+                                            </span>}
+                                            </div>
                                         </div>
                                     )
                                 })}
@@ -552,7 +562,7 @@ export default function ChatPage() {
                             <div className="flex mt-4">
                                 <input
                                     type="text"
-                                    className="flex-1 p-2 border rounded-l bg-[rgba(255,255,255,0.8)] placeholder:text-red-400"
+                                    className="flex-1 p-2 border rounded-l bg-[rgba(255,255,255,0.8)] placeholder:text-red-400 text-gray-800"
                                     placeholder="Type a message..."
                                     value={messageInput}
                                     onChange={(e) => handleType(e)}
@@ -572,6 +582,7 @@ export default function ChatPage() {
                         </p>
                     )}
                 </div>
+            </div>
             </div>
         </div>
     );

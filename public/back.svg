@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="36" height="24" viewBox="0 0 36 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+  <!-- Arrow shaft -->
+  <line x1="24" y1="12" x2="10" y2="12" />
+  <!-- Arrowhead -->
+  <polyline points="16 6 6 12 16 18" />
+</svg>
